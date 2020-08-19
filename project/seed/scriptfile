@@ -1,0 +1,25 @@
+#!bin/bash
+sudo apt-get update
+sudo apt install unzip -y
+export TER_VER=`curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1'`
+export ARM_CLIENT_ID="685df91a-fe35-4309-bbb9-320fcf7b526c"
+export ARM_CLIENT_SECRET="MhW9i4REbk4DlZGsGLLn98t.qBqAC0r_Nn"
+export ARM_SUBSCRIPTION_ID="96a6e064-0704-43bf-8997-0625181eadc3"
+export ARM_TENANT_ID="14334a33-bf32-432f-8019-261053bff727"
+sudo wget https://releases.hashicorp.com/terraform/${TER_VER}/terraform_${TER_VER}_linux_amd64.zip
+sudo unzip terraform_${TER_VER}_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+git clone https://github.com/ramakrishna20/terraform.git
+terraform init terraform/
+terraform plan terraform/
+terraform apply -auto-approve terraform/ >> /tmp/rama
+grep public_ip_address /tmp/rama | awk {'print $3'} >> /tmp/krishna
+sudo apt-get install sshpass -y
+sshpass -p Origin12345678 ssh azureuser@$(cat /tmp/krishna) -yes
+sudo apt-get update
+sudo apt-get install ansible -y
+cd ~
+git clone https://github.com/ramakrishna20/yaml-codes.git
+sudo ansible-playbook yaml-codes/kubernetes-yaml
+
+
